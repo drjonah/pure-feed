@@ -9,6 +9,7 @@ extension/options/node_modules/
 extension/content/content.bundle.js
 extension/offscreen/offscreen.bundle.js
 extension/options/dist/
+*.zip
 
 # npm
 package-lock.json
