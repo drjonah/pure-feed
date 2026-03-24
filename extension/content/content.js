@@ -20,7 +20,8 @@ const CACHE_MAX = 500;
 // --- State ---
 
 let settings = null;
-const classifiedCache = new Map(); // normalizedUrl → predictions[]
+let replacementImageUrl = null;           // dataUrl from storage, or null → falls back to default
+const classifiedCache = new Map();        // normalizedUrl → predictions[]
 
 // --- Helpers ---
 
@@ -76,10 +77,18 @@ function applyAction(wrapper, action) {
     wrapper.style.display = 'none';
   } else if (action === 'replace') {
     wrapper.dataset.pureFeedState = 'replaced';
-    const placeholderUrl = chrome.runtime.getURL('assets/placeholder.png');
+    const url = replacementImageUrl || chrome.runtime.getURL('assets/placeholder.png');
     wrapper.querySelectorAll('img').forEach((img) => {
-      img.src = placeholderUrl;
+      img.src = url;
     });
+  } else if (action === 'delete') {
+    wrapper.dataset.pureFeedState = 'deleted';
+    // Walk up to the nearest post/article container so the whole post is removed
+    const post = wrapper.closest('article') ||
+                 wrapper.closest('shreddit-post') ||
+                 wrapper.closest('[data-testid="post-container"]') ||
+                 wrapper.closest('[data-testid="tweet"]');
+    (post || wrapper).remove();
   }
 }
 
@@ -241,12 +250,20 @@ function observeFeed() {
     return;
   }
 
+  // Load custom replacement image (stored separately from settings)
+  chrome.storage.local.get('replacementImage', ({ replacementImage }) => {
+    replacementImageUrl = replacementImage?.dataUrl || null;
+  });
+
   if (!settings.enabled || !settings.platforms[PLATFORM.id]) return;
 
   observeFeed();
 
   chrome.storage.onChanged.addListener((changes, area) => {
-    if (area !== 'local' || !changes.settings) return;
-    settings = changes.settings.newValue;
+    if (area !== 'local') return;
+    if (changes.settings) settings = changes.settings.newValue;
+    if ('replacementImage' in changes) {
+      replacementImageUrl = changes.replacementImage.newValue?.dataUrl || null;
+    }
   });
 })();

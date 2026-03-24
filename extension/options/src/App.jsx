@@ -11,7 +11,16 @@ export default function App() {
 
   return (
     <div className="container">
-      <h1>Pure Feed Settings</h1>
+      <div className="app-header">
+        <div className="app-brand">
+          <div className="app-logo">🛡️</div>
+          <div>
+            <h1 className="app-title">Pure Feed</h1>
+            <p className="app-subtitle">On-device content filtering</p>
+          </div>
+        </div>
+      </div>
+
       <nav className="tabs">
         {TABS.map(t => (
           <button
@@ -23,7 +32,8 @@ export default function App() {
           </button>
         ))}
       </nav>
-      <div className="tab-content">
+
+      <div className="tab-content" key={tab}>
         {tab === 'Controls' && <Controls />}
         {tab === 'Stats' && <Stats />}
         {tab === 'About' && <About />}

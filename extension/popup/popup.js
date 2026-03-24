@@ -9,13 +9,13 @@ chrome.runtime.sendMessage({ type: 'GET_STATUS' }, (response) => {
   if (chrome.runtime.lastError || !response) return;
   const statusEl = document.getElementById('modelStatus');
   if (response.modelReady) {
-    statusEl.innerHTML = '<span class="status-dot dot-green"></span>Ready';
+    statusEl.innerHTML = '<span class="dot dot-green"></span><span>Ready</span>';
   } else {
-    statusEl.innerHTML = '<span class="status-dot dot-yellow"></span>Loading\u2026';
+    statusEl.innerHTML = '<span class="dot dot-yellow"></span><span>Loading\u2026</span>';
   }
 });
 
-// Filtered count — read from storage (placeholder until Phase 2 stats)
+// Filtered count — read from storage
 chrome.storage.local.get('stats', ({ stats }) => {
   const today = new Date().toISOString().split('T')[0];
   const todayStats = stats?.find(s => s.date === today);

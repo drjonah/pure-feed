@@ -41,13 +41,26 @@ export default function About() {
     <div className="about">
       <section className="about-section">
         <h2>Info</h2>
+
+        <div className="privacy-badge">
+          <span className="privacy-icon">🔒</span>
+          <div>
+            <div className="privacy-text">100% On-Device Processing</div>
+            <div className="privacy-sub">No images ever leave your browser</div>
+          </div>
+        </div>
+
         <div className="info-row">
           <span>Extension version</span>
-          <span>{version}</span>
+          <span>v{version}</span>
         </div>
         <div className="info-row">
           <span>ML model</span>
           <span>MobileNet v2 (NSFW.js)</span>
+        </div>
+        <div className="info-row">
+          <span>Supported platforms</span>
+          <span>X · Reddit · Instagram</span>
         </div>
       </section>
 
@@ -56,7 +69,7 @@ export default function About() {
         <div className="action-row">
           <div>
             <div className="action-label">Export Stats</div>
-            <div className="action-desc">Download stats as a JSON file</div>
+            <div className="action-desc">Download all statistics as a JSON file</div>
           </div>
           <button className="btn" onClick={exportStats}>Export</button>
         </div>

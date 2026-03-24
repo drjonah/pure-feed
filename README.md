@@ -1,8 +1,29 @@
 # Pure Feed
 
-A Chrome extension that filters NSFW content from social media feeds using on-device machine learning. All classification happens locally — no images ever leave your browser.
+**On-device NSFW filtering for social media feeds.** Pure Feed uses machine learning entirely inside your browser — no images, no data, and no requests ever leave your device.
 
-**Supported platforms:** X, Reddit, Instagram
+Supported platforms: **X (Twitter)** · **Reddit** · **Instagram**
+
+---
+
+## Screenshots
+
+<table>
+  <tr>
+    <td align="center"><b>Popup</b></td>
+    <td align="center"><b>Controls</b></td>
+    <td align="center"><b>Stats</b></td>
+    <td align="center"><b>About</b></td>
+  </tr>
+  <tr>
+    <td valign="top"><img src="docs/screenshots/popup.png" width="190" alt="Popup — quick toggle, filtered count, model status" /></td>
+    <td valign="top"><img src="docs/screenshots/options-controls.png" width="190" alt="Controls — platform toggles, strictness, actions, custom replacement image" /></td>
+    <td valign="top"><img src="docs/screenshots/options-stats.png" width="190" alt="Stats — summary cards, activity chart, label and platform breakdowns" /></td>
+    <td valign="top"><img src="docs/screenshots/options-about.png" width="190" alt="About — on-device privacy badge, version info, data export and reset" /></td>
+  </tr>
+</table>
+
+---
 
 ## Install
 
@@ -12,38 +33,80 @@ Go to the [Releases page](../../releases/latest) and download `pure-feed-v*.zip`
 
 ### 2. Extract
 
-Unzip the downloaded file. You'll get a folder with the extension files.
+Unzip the downloaded file to get a folder with the extension files.
 
 ### 3. Load in Chrome
 
-1. Open `chrome://extensions` in Chrome
+1. Open `chrome://extensions`
 2. Enable **Developer mode** (toggle in the top right)
-3. Click **Load unpacked**
-4. Select the extracted folder
+3. Click **Load unpacked** and select the extracted folder
 
 ### 4. Pin the extension
 
-Click the puzzle piece icon in Chrome's toolbar, then pin **Pure Feed** for quick access.
+Click the puzzle piece icon in Chrome's toolbar and pin **Pure Feed** for quick access.
+
+---
 
 ## Usage
 
-- **Click the extension icon** to see the popup with a quick toggle, model status, and today's filtered count
-- **Click "Settings"** in the popup to open the full options page with:
-  - **Controls** — Per-platform toggles, strictness presets, threshold sliders, action selectors
-  - **Stats** — Charts showing images scanned/filtered over time, by label, and by platform
-  - **About** — Version info, export/reset data
+**Click the extension icon** to open the popup:
+- Toggle filtering on/off instantly
+- See how many images were filtered today across all platforms
+- Check ML model status (green = ready, amber = loading)
+- Open the full settings page
+
+**Click "Open Settings →"** to access the options page:
+
+| Tab | What you can configure |
+|-----|------------------------|
+| **Controls** | Per-platform toggles · Strictness preset · Per-label actions · Custom replacement image · Min image size |
+| **Stats** | Images scanned/filtered over the last 7, 30, or 90 days — by label and by platform |
+| **About** | Version info · Data export · Settings reset |
+
+---
 
 ## How it works
 
-Pure Feed uses [NSFW.js](https://github.com/infinitered/nsfwjs) (MobileNet v2) running entirely in your browser via TensorFlow.js. When you scroll through your feed:
+Pure Feed uses [NSFW.js](https://github.com/infinitered/nsfwjs) (MobileNet v2) running entirely in your browser via TensorFlow.js.
 
-1. New images are detected via a MutationObserver
-2. Images are pre-hidden to prevent NSFW content from flashing
-3. Each image is classified into 5 categories: Neutral, Drawing, Sexy, Porn, Hentai
-4. Based on your configured thresholds, flagged images are blurred, hidden, or replaced
-5. Clean images are revealed normally
+1. **Detect** — A `MutationObserver` watches your feed for new images as you scroll
+2. **Pre-hide** — Images are hidden immediately to prevent NSFW content flashing on screen
+3. **Classify** — Each image is sent to an offscreen document running TensorFlow.js, which returns confidence scores across 5 labels: `Neutral`, `Drawing`, `Sexy`, `Porn`, `Hentai`
+4. **Act** — Images that exceed your configured thresholds get the action you chose; clean images are revealed normally
+5. **Cache** — Results are cached by URL so each image is only classified once per session
 
-No data is sent to any server. The ML model (~2.5MB) ships with the extension.
+> All processing is on-device. No image data is sent to any server.
+
+---
+
+## Configuration
+
+### Strictness presets
+
+| Preset | Description |
+|--------|-------------|
+| **Relaxed** | Only catches high-confidence NSFW content |
+| **Moderate** | Balanced defaults (recommended) |
+| **Strict** | Lower thresholds — catches borderline content |
+
+You can also open **Advanced Thresholds** to set per-label confidence values (0.0–1.0) manually.
+
+### Actions per label
+
+For each label (`Sexy`, `Porn`, `Hentai`) you can choose independently:
+
+| Action | What happens |
+|--------|-------------|
+| **Blur** | Applies a 24px blur; click the image to temporarily reveal it |
+| **Hide** | Collapses the image element — the post remains but the media is gone |
+| **Replace** | Swaps the image with your configured replacement (default: a placeholder) |
+| **Delete post** | Removes the entire post from the DOM — it's gone until you reload the page |
+
+### Custom replacement image
+
+When any label is set to **Replace**, you can upload your own image in the Controls tab under **Replacement Image**. The image is compressed and stored locally in your browser — it persists across sessions and never leaves your device.
+
+---
 
 ## Development
 
@@ -54,12 +117,14 @@ cd extension
 npm run setup
 ```
 
-After making changes, rebuild:
+After making changes:
 
 ```bash
 cd extension
 npm run build
 ```
+
+Then reload the extension in `chrome://extensions`.
 
 To package a release zip:
 
@@ -68,12 +133,32 @@ cd extension
 npm run package
 ```
 
-Then reload the extension in `chrome://extensions`.
+The options page also has a live dev server with hot-reload and a full Chrome API mock (no extension context required):
+
+```bash
+cd extension/options
+npm run dev
+# → http://localhost:5173
+```
+
+---
 
 ## Tech stack
 
-- Chrome Manifest V3
-- TensorFlow.js + NSFW.js (MobileNet v2)
-- React + Vite (options page)
-- Chart.js (stats visualizations)
-- Vanilla JS (content scripts)
+| Layer | Technology |
+|-------|------------|
+| Extension | Chrome Manifest V3 |
+| ML | TensorFlow.js + NSFW.js (MobileNet v2, ~25 MB) |
+| Content scripts | Vanilla JS + MutationObserver |
+| Options page | React 19 + Vite 6 |
+| Charts | Chart.js + react-chartjs-2 |
+| Build | esbuild (content/offscreen bundles) |
+
+---
+
+## Privacy
+
+- **Zero data collection** — no analytics, no telemetry, no remote requests
+- **On-device ML** — the model ships with the extension and runs locally via WebGL or WASM
+- **No image uploads** — pixels are classified inside an offscreen canvas; they never leave your browser
+- **Local storage only** — settings, stats, and any custom replacement image are stored in `chrome.storage.local`

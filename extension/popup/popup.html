@@ -3,93 +3,217 @@
 <head>
   <meta charset="utf-8">
   <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
     body {
-      width: 280px;
-      padding: 16px;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      font-size: 14px;
-      margin: 0;
-      color: #1a1a2e;
+      width: 300px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: #fff;
+      color: #111827;
     }
-    h1 { font-size: 16px; margin: 0 0 12px; }
-    .row {
+
+    /* ── Header ─────────────────────────────────── */
+    .header {
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      padding: 18px 20px 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -32px; right: -32px;
+      width: 100px; height: 100px;
+      background: rgba(255, 255, 255, 0.07);
+      border-radius: 50%;
+    }
+    .header::after {
+      content: '';
+      position: absolute;
+      bottom: -20px; left: -10px;
+      width: 70px; height: 70px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 50%;
+    }
+    .header-row {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      padding: 8px 0;
-      border-bottom: 1px solid #eee;
+      justify-content: space-between;
+      position: relative;
+      z-index: 1;
     }
-    .row:last-child { border-bottom: none; }
-    .label { font-weight: 500; }
-    .sublabel { font-size: 12px; color: #888; margin-top: 2px; }
-    /* Toggle switch */
-    .switch { position: relative; width: 40px; height: 22px; }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-icon {
+      width: 34px; height: 34px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .brand-name {
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.3px;
+    }
+    .brand-sub {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.65);
+      margin-top: 1px;
+    }
+
+    /* ── Toggle switch ───────────────────────────── */
+    .switch { position: relative; width: 44px; height: 25px; flex-shrink: 0; cursor: pointer; }
     .switch input { opacity: 0; width: 0; height: 0; }
     .slider {
-      position: absolute; cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: #ccc; border-radius: 22px;
-      transition: .2s;
+      position: absolute; inset: 0;
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 25px;
+      border: 1.5px solid rgba(255, 255, 255, 0.35);
+      transition: background 0.25s, border-color 0.25s;
     }
-    .slider:before {
-      content: ""; position: absolute;
-      height: 16px; width: 16px; left: 3px; bottom: 3px;
-      background: white; border-radius: 50%; transition: .2s;
+    .slider::before {
+      content: '';
+      position: absolute;
+      height: 18px; width: 18px;
+      left: 2px; top: 50%;
+      transform: translateY(-50%);
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
     }
-    input:checked + .slider { background: #4f46e5; }
-    input:checked + .slider:before { transform: translateX(18px); }
-    .status-dot {
-      display: inline-block; width: 8px; height: 8px;
-      border-radius: 50%; margin-right: 6px;
+    input:checked + .slider { background: rgba(255, 255, 255, 0.45); border-color: rgba(255, 255, 255, 0.65); }
+    input:checked + .slider::before { transform: translateY(-50%) translateX(20px); }
+
+    /* ── Body rows ───────────────────────────────── */
+    .content { padding: 4px 0; }
+
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 20px;
+      border-bottom: 1px solid #f3f4f6;
     }
-    .dot-green { background: #22c55e; }
-    .dot-yellow { background: #f59e0b; }
-    .stat-num { font-size: 20px; font-weight: 700; color: #4f46e5; }
+    .row:last-child { border-bottom: none; }
+
+    .row-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: #374151;
+    }
+    .row-sub {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-top: 2px;
+    }
+
+    /* ── Filtered count ──────────────────────────── */
+    .count {
+      font-size: 26px;
+      font-weight: 800;
+      color: #4f46e5;
+      letter-spacing: -1px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ── Model status pill ───────────────────────── */
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 11px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #374151;
+    }
+    .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .dot-green {
+      background: #10b981;
+      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+    }
+    .dot-yellow {
+      background: #f59e0b;
+      animation: blink 1.4s ease-in-out infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.35; }
+    }
+
+    /* ── Footer button ───────────────────────────── */
+    .footer { padding: 12px 20px 16px; }
+    .btn-settings {
+      width: 100%;
+      padding: 11px;
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.1px;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .btn-settings:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-settings:active { opacity: 1; transform: translateY(0); }
   </style>
 </head>
 <body>
-  <h1>Pure Feed</h1>
-
-  <div class="row">
-    <div>
-      <div class="label">Filter enabled</div>
-    </div>
-    <label class="switch">
-      <input type="checkbox" id="enableToggle">
-      <span class="slider"></span>
-    </label>
-  </div>
-
-  <div class="row">
-    <div>
-      <div class="label">Model status</div>
-    </div>
-    <div id="modelStatus">
-      <span class="status-dot dot-yellow"></span>Loading&hellip;
+  <div class="header">
+    <div class="header-row">
+      <div class="brand">
+        <div class="brand-icon">🛡️</div>
+        <div>
+          <div class="brand-name">Pure Feed</div>
+          <div class="brand-sub">On-device filtering</div>
+        </div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="enableToggle">
+        <span class="slider"></span>
+      </label>
     </div>
   </div>
 
-  <div class="row">
-    <div>
-      <div class="label">Filtered today</div>
-      <div class="sublabel">across all platforms</div>
+  <div class="content">
+    <div class="row">
+      <div>
+        <div class="row-label">Filtered today</div>
+        <div class="row-sub">across all platforms</div>
+      </div>
+      <div class="count" id="filteredCount">&mdash;</div>
     </div>
-    <div class="stat-num" id="filteredCount">&mdash;</div>
+
+    <div class="row">
+      <div class="row-label">ML Model</div>
+      <div id="modelStatus" class="status-pill">
+        <span class="dot dot-yellow"></span>
+        <span>Loading&hellip;</span>
+      </div>
+    </div>
   </div>
 
-  <div style="text-align: center; padding-top: 12px;">
-    <button id="settingsBtn" style="
-      padding: 8px 24px;
-      background: #4f46e5;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-    ">Settings</button>
+  <div class="footer">
+    <button id="settingsBtn" class="btn-settings">Open Settings &rarr;</button>
   </div>
+
+  <script src="popup.js"></script>
 </body>
-<script src="popup.js"></script>
 </html>
