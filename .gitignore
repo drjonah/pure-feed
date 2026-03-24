@@ -1,0 +1,17 @@
+node_modules/
+extension/node_modules/
+extension/options/node_modules/
+
+# OS files
+.DS_Store
+
+# Build artifacts
+extension/content/content.bundle.js
+extension/offscreen/offscreen.bundle.js
+extension/options/dist/
+
+# npm
+package-lock.json
+
+# Cluade
+.claude/

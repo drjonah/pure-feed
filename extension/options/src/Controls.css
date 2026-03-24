@@ -1,0 +1,134 @@
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.control-section {
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.control-section h2 {
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #666;
+  margin-bottom: 12px;
+}
+
+.control-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+}
+
+.control-row:last-child {
+  border-bottom: none;
+}
+
+.control-row span {
+  font-size: 14px;
+}
+
+.control-row select {
+  padding: 4px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 13px;
+  background: #fff;
+}
+
+.number-input {
+  width: 72px;
+  padding: 4px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 13px;
+  text-align: right;
+}
+
+.strictness-group {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.strictness-option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.custom-badge {
+  font-size: 12px;
+  color: #888;
+  background: #f0f0f0;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+details.control-section summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+details.control-section summary::-webkit-details-marker {
+  display: none;
+}
+
+details.control-section summary h2 {
+  display: inline;
+}
+
+details.control-section summary h2::before {
+  content: '\25B6';
+  display: inline-block;
+  margin-right: 6px;
+  font-size: 10px;
+  transition: transform 0.15s;
+}
+
+details[open].control-section summary h2::before {
+  transform: rotate(90deg);
+}
+
+.thresholds {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.threshold-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.threshold-row label {
+  width: 64px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.threshold-row input[type="range"] {
+  flex: 1;
+}
+
+.threshold-value {
+  width: 40px;
+  text-align: right;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: #666;
+}

@@ -1,0 +1,64 @@
+{
+  "manifest_version": 3,
+  "name": "Pure Feed",
+  "version": "0.1.0",
+  "description": "Filters NSFW images from social media feeds using on-device ML.",
+  "permissions": [
+    "storage",
+    "offscreen",
+    "scripting",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://twitter.com/*",
+    "https://x.com/*",
+    "https://pbs.twimg.com/*",
+    "https://www.reddit.com/*",
+    "https://preview.redd.it/*",
+    "https://external-preview.redd.it/*",
+    "https://i.redd.it/*",
+    "https://www.instagram.com/*",
+    "https://*.cdninstagram.com/*",
+    "https://*.fbcdn.net/*"
+  ],
+  "background": {
+    "service_worker": "background/service-worker.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://twitter.com/*",
+        "https://x.com/*",
+        "https://www.reddit.com/*",
+        "https://www.instagram.com/*"
+      ],
+      "js": ["content/content.bundle.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "16": "assets/16x16.png",
+    "48": "assets/48x48.png",
+    "128": "assets/128x128.png"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "Pure Feed",
+    "default_icon": {
+      "16": "assets/16x16.png",
+      "48": "assets/48x48.png",
+      "128": "assets/128x128.png"
+    }
+  },
+  "options_page": "options/dist/index.html",
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["assets/*", "models/*"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "pure-feed-options",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "react": "^19.x",
+    "react-dom": "^19.x",
+    "chart.js": "^4.x",
+    "react-chartjs-2": "^5.x"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.x",
+    "vite": "^6.x"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  }
+}
