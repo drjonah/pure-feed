@@ -89,14 +89,24 @@ const CHECK_ORDER = ['Porn', 'Hentai', 'Sexy'];
 /**
  * Scan a text string for NSFW content.
  * @param {string} text — the raw text to check
+ * @param {string[]} [customWords] — optional user-defined words to match
  * @returns {string|null} — the matched category label, or null if clean
  */
-export function scanText(text) {
+export function scanText(text, customWords) {
   if (!text || text.length < 3) return null;
 
+  // Built-in patterns first (severity order)
   for (const category of CHECK_ORDER) {
     for (const pattern of CATEGORIES[category]) {
       if (pattern.test(text)) return category;
+    }
+  }
+
+  // Custom words last
+  if (customWords?.length) {
+    const lower = text.toLowerCase();
+    for (const word of customWords) {
+      if (word && lower.includes(word.toLowerCase())) return 'Custom';
     }
   }
 

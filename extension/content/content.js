@@ -219,7 +219,7 @@ function handleTextElement(el) {
   el.dataset.pureFeedTextSeen = 'true';
 
   const text = el.textContent;
-  const label = scanText(text);
+  const label = scanText(text, settings.textFilterCustomWords);
   if (!label) return;
 
   const post = el.closest(PLATFORM.postContainer);

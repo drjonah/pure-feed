@@ -41,6 +41,7 @@ function approxKB(dataUrl) {
 export default function Controls() {
   const [settings, setSettings]               = useState(null);
   const [replacementImage, setReplacementImage] = useState(null); // { dataUrl, name } | null
+  const [customWordInput, setCustomWordInput]   = useState('');
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -269,6 +270,66 @@ export default function Controls() {
         <div className="row-hint">
           Deletes posts containing explicit text. No blur — posts are removed entirely.
         </div>
+
+        {settings.textFilterEnabled && (
+          <>
+            <div className="custom-words-divider" />
+            <div className="custom-words-label">Custom words</div>
+            <div className="custom-words-input-row">
+              <input
+                type="text"
+                className="custom-word-input"
+                placeholder="Add a word or phrase…"
+                value={customWordInput}
+                onChange={(e) => setCustomWordInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const word = customWordInput.trim();
+                    if (!word) return;
+                    const existing = settings.textFilterCustomWords || [];
+                    if (!existing.some(w => w.toLowerCase() === word.toLowerCase())) {
+                      update({ textFilterCustomWords: [...existing, word] });
+                    }
+                    setCustomWordInput('');
+                  }
+                }}
+              />
+              <button
+                className="btn-add-word"
+                onClick={() => {
+                  const word = customWordInput.trim();
+                  if (!word) return;
+                  const existing = settings.textFilterCustomWords || [];
+                  if (!existing.some(w => w.toLowerCase() === word.toLowerCase())) {
+                    update({ textFilterCustomWords: [...existing, word] });
+                  }
+                  setCustomWordInput('');
+                }}
+              >
+                Add
+              </button>
+            </div>
+            {(settings.textFilterCustomWords?.length > 0) && (
+              <div className="custom-words-chips">
+                {settings.textFilterCustomWords.map((word) => (
+                  <span key={word} className="word-chip">
+                    {word}
+                    <button
+                      className="chip-remove"
+                      onClick={() => {
+                        const updated = settings.textFilterCustomWords.filter(w => w !== word);
+                        update({ textFilterCustomWords: updated });
+                      }}
+                    >
+                      &times;
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+          </>
+        )}
       </section>
 
       {/* Image Filtering */}

@@ -11,6 +11,7 @@ const DEFAULT_SETTINGS = {
   checkVideoFrames: true,
   showFilteredCount: true,
   textFilterEnabled: false,
+  textFilterCustomWords: [],
 };
 
 export default function About() {

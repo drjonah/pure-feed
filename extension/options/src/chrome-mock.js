@@ -9,6 +9,7 @@ const DEV_SETTINGS = {
   skipSmallImages: true, smallImageThreshold: 100,
   checkVideoFrames: true, showFilteredCount: true,
   textFilterEnabled: false,
+  textFilterCustomWords: [],
 };
 
 const getURL = (path) => '/' + path.split('/').at(-1);
