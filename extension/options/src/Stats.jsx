@@ -7,6 +7,7 @@ import {
   LineElement,
   BarElement,
   ArcElement,
+  Filler,
   Tooltip,
   Legend,
 } from 'chart.js';
@@ -20,6 +21,7 @@ ChartJS.register(
   LineElement,
   BarElement,
   ArcElement,
+  Filler,
   Tooltip,
   Legend
 );
@@ -124,7 +126,7 @@ export default function Stats() {
         </div>
       ) : (
         <>
-          <div className="summary-cards">
+          <div className="summary-cards summary-top">
             <div className="card">
               <div className="card-value">{summary.total.toLocaleString()}</div>
               <div className="card-label">Scanned</div>
@@ -140,6 +142,12 @@ export default function Stats() {
             <div className="card">
               <div className="card-value">{summary.rate}%</div>
               <div className="card-label">Filter rate</div>
+            </div>
+          </div>
+          <div className="summary-cards summary-bottom">
+            <div className="card">
+              <div className="card-value">{(summary.textFilteredCount || 0).toLocaleString()}</div>
+              <div className="card-label">Text filtered</div>
             </div>
             <div className="card">
               <div className="card-value" style={{ fontSize: summary.topPlatform.length > 4 ? '16px' : undefined }}>
