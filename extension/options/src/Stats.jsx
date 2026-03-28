@@ -7,6 +7,7 @@ import {
   LineElement,
   BarElement,
   ArcElement,
+  Filler,
   Tooltip,
   Legend,
 } from 'chart.js';
@@ -20,6 +21,7 @@ ChartJS.register(
   LineElement,
   BarElement,
   ArcElement,
+  Filler,
   Tooltip,
   Legend
 );
@@ -63,20 +65,21 @@ export default function Stats() {
   }, [stats, range]);
 
   const summary = useMemo(() => {
-    let total = 0, filteredCount = 0;
+    let total = 0, filteredCount = 0, textFilteredCount = 0;
     const byLabel    = { Sexy: 0, Porn: 0, Hentai: 0 };
     const byPlatform = {};
 
     for (const entry of filtered) {
-      total         += entry.total;
-      filteredCount += entry.filtered;
+      total              += entry.total;
+      filteredCount      += entry.filtered;
+      textFilteredCount  += entry.textFiltered || 0;
       for (const [lbl, n] of Object.entries(entry.byLabel    || {})) byLabel[lbl]    = (byLabel[lbl]    || 0) + n;
       for (const [plt, n] of Object.entries(entry.byPlatform || {})) byPlatform[plt] = (byPlatform[plt] || 0) + n;
     }
 
     const top  = Object.entries(byPlatform).sort((a, b) => b[1] - a[1])[0];
     const rate = total > 0 ? ((filteredCount / total) * 100).toFixed(1) : '0.0';
-    return { total, filteredCount, rate, byLabel, byPlatform, topPlatform: top?.[0] || '—' };
+    return { total, filteredCount, textFilteredCount, rate, byLabel, byPlatform, topPlatform: top?.[0] || '—' };
   }, [filtered]);
 
   const isEmpty = filtered.length === 0 || summary.total === 0;
@@ -123,7 +126,7 @@ export default function Stats() {
         </div>
       ) : (
         <>
-          <div className="summary-cards">
+          <div className="summary-cards summary-top">
             <div className="card">
               <div className="card-value">{summary.total.toLocaleString()}</div>
               <div className="card-label">Scanned</div>
@@ -135,6 +138,12 @@ export default function Stats() {
             <div className="card">
               <div className="card-value">{summary.rate}%</div>
               <div className="card-label">Filter rate</div>
+            </div>
+          </div>
+          <div className="summary-cards summary-bottom">
+            <div className="card">
+              <div className="card-value">{(summary.textFilteredCount || 0).toLocaleString()}</div>
+              <div className="card-label">Text filtered</div>
             </div>
             <div className="card">
               <div className="card-value" style={{ fontSize: summary.topPlatform.length > 4 ? '16px' : undefined }}>
