@@ -136,17 +136,13 @@ export default function Stats() {
               <div className="card-label">Filtered</div>
             </div>
             <div className="card">
-              <div className="card-value">{summary.textFilteredCount.toLocaleString()}</div>
-              <div className="card-label">Text filtered</div>
-            </div>
-            <div className="card">
               <div className="card-value">{summary.rate}%</div>
               <div className="card-label">Filter rate</div>
             </div>
           </div>
           <div className="summary-cards summary-bottom">
             <div className="card">
-              <div className="card-value">{(summary.textFilteredCount || 0).toLocaleString()}</div>
+              <div className="card-value">{summary.textFilteredCount.toLocaleString()}</div>
               <div className="card-label">Text filtered</div>
             </div>
             <div className="card">
