@@ -24,6 +24,12 @@ export const X = {
   // so layout is preserved
   mediaWrapper: '[data-testid="tweetPhoto"]',
 
+  // Post text content for text-based filtering
+  textContent: '[data-testid="tweetText"]',
+
+  // Post container for deletion
+  postContainer: '[data-testid="tweet"], article',
+
   // Minimum dimensions to bother classifying (skip icons, avatars, etc.)
   minWidth: 100,
   minHeight: 100,

@@ -45,6 +45,14 @@ Unzip the downloaded file to get a folder with the extension files.
 
 Click the puzzle piece icon in Chrome's toolbar and pin **Pure Feed** for quick access.
 
+### 5. Enable in Incognito (optional)
+
+Pure Feed is not active in Incognito by default. To enable it:
+
+1. Open `chrome://extensions`
+2. Click **Details** on the Pure Feed card
+3. Toggle **Allow in Incognito**
+
 ---
 
 ## Usage
@@ -59,7 +67,7 @@ Click the puzzle piece icon in Chrome's toolbar and pin **Pure Feed** for quick 
 
 | Tab | What you can configure |
 |-----|------------------------|
-| **Controls** | Per-platform toggles · Strictness preset · Per-label actions · Custom replacement image · Min image size |
+| **Controls** | Per-platform toggles · Strictness preset · Per-label actions · Custom replacement image · Text filtering toggle · Min image size |
 | **Stats** | Images scanned/filtered over the last 7, 30, or 90 days — by label and by platform |
 | **About** | Version info · Data export · Settings reset |
 
@@ -69,11 +77,11 @@ Click the puzzle piece icon in Chrome's toolbar and pin **Pure Feed** for quick 
 
 Pure Feed uses [NSFW.js](https://github.com/infinitered/nsfwjs) (MobileNet v2) running entirely in your browser via TensorFlow.js.
 
-1. **Detect** — A `MutationObserver` watches your feed for new images as you scroll
+1. **Detect** — A `MutationObserver` watches your feed for new images and text as you scroll
 2. **Pre-hide** — Images are hidden immediately to prevent NSFW content flashing on screen
-3. **Classify** — Each image is sent to an offscreen document running TensorFlow.js, which returns confidence scores across 5 labels: `Neutral`, `Drawing`, `Sexy`, `Porn`, `Hentai`
-4. **Act** — Images that exceed your configured thresholds get the action you chose; clean images are revealed normally
-5. **Cache** — Results are cached by URL so each image is only classified once per session
+3. **Classify** — Each image is sent to an offscreen document running TensorFlow.js, which returns confidence scores across 5 labels: `Neutral`, `Drawing`, `Sexy`, `Porn`, `Hentai`. Text is scanned locally via keyword matching.
+4. **Act** — Images that exceed your configured thresholds get the action you chose; posts with NSFW text are deleted; clean content is revealed normally
+5. **Cache** — Image results are cached by URL so each image is only classified once per session
 
 > All processing is on-device. No image data is sent to any server.
 
@@ -101,6 +109,10 @@ For each label (`Sexy`, `Porn`, `Hentai`) you can choose independently:
 | **Hide** | Collapses the image element — the post remains but the media is gone |
 | **Replace** | Swaps the image with your configured replacement (default: a placeholder) |
 | **Delete post** | Removes the entire post from the DOM — it's gone until you reload the page |
+
+### Text filtering
+
+When enabled, Pure Feed scans post text for NSFW keywords and deletes matching posts from the feed. This uses fast keyword/regex matching (no ML model needed) and catches explicit terms across the same categories used for images (Sexy, Porn, Hentai). Text filtering is off by default — enable it in the Controls tab under **Text Filtering**.
 
 ### Custom replacement image
 

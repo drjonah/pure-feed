@@ -1,6 +1,7 @@
 import { X } from './platforms/twitter.js';
 import { REDDIT } from './platforms/reddit.js';
 import { INSTAGRAM } from './platforms/instagram.js';
+import { scanText } from './text-filter.js';
 
 // --- Platform Detection ---
 
@@ -211,6 +212,47 @@ function handleImage(img) {
   }
 }
 
+// --- Text filtering ---
+
+function handleTextElement(el) {
+  if (el.dataset.pureFeedTextSeen) return;
+  el.dataset.pureFeedTextSeen = 'true';
+
+  const text = el.textContent;
+  const label = scanText(text);
+  if (!label) return;
+
+  const post = el.closest(PLATFORM.postContainer);
+  if (post) {
+    post.remove();
+  } else {
+    el.remove();
+  }
+
+  try {
+    chrome.runtime.sendMessage({
+      type: 'RECORD_STAT',
+      label,
+      platformId: PLATFORM.id,
+      source: 'text',
+    });
+  } catch {
+    // Extension context invalidated — ignore
+  }
+}
+
+function scanTextInNode(node) {
+  if (!settings?.textFilterEnabled || !PLATFORM.textContent) return;
+
+  const els = node.matches?.(PLATFORM.textContent)
+    ? [node]
+    : [...node.querySelectorAll(PLATFORM.textContent)];
+
+  for (const el of els) {
+    handleTextElement(el);
+  }
+}
+
 // --- MutationObserver ---
 
 function observeFeed() {
@@ -228,6 +270,9 @@ function observeFeed() {
         for (const img of imgs) {
           handleImage(img);
         }
+
+        // Text filtering
+        scanTextInNode(node);
       }
     }
   });
@@ -236,6 +281,11 @@ function observeFeed() {
 
   // Scan images already in the DOM
   document.querySelectorAll(PLATFORM.mediaItem).forEach(handleImage);
+
+  // Scan text already in the DOM
+  if (settings?.textFilterEnabled && PLATFORM.textContent) {
+    document.querySelectorAll(PLATFORM.textContent).forEach(handleTextElement);
+  }
 }
 
 // --- Init ---

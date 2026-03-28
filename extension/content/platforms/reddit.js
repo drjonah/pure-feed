@@ -17,6 +17,17 @@ export const REDDIT = {
   // Wrapper around media — blur this to preserve layout
   mediaWrapper: '[slot="post-media-container"], [data-testid="post-content"] .media-element',
 
+  // Post text content for text-based filtering
+  textContent: [
+    'shreddit-post [slot="title"]',
+    'shreddit-post [slot="text-body"]',
+    'article h3',
+    '[data-testid="post-content"] p',
+  ].join(', '),
+
+  // Post container for deletion
+  postContainer: 'shreddit-post, article, [data-testid="post-container"]',
+
   minWidth: 100,
   minHeight: 100,
 };

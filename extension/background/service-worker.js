@@ -43,6 +43,7 @@ const DEFAULT_SETTINGS = {
   smallImageThreshold: 100,
   checkVideoFrames: true,
   showFilteredCount: true,
+  textFilterEnabled: false,
 };
 
 // --- Strictness Presets ---
@@ -55,7 +56,7 @@ const STRICTNESS_PRESETS = {
 
 // --- Stats Tracking ---
 
-async function recordClassification(label, platformId) {
+async function recordClassification(label, platformId, source) {
   const today = new Date().toISOString().split('T')[0];
   const { stats = [] } = await chrome.storage.local.get('stats');
 
@@ -65,6 +66,7 @@ async function recordClassification(label, platformId) {
       date: today,
       total: 0,
       filtered: 0,
+      textFiltered: 0,
       byLabel: { Sexy: 0, Porn: 0, Hentai: 0 },
       byPlatform: {},
     };
@@ -74,6 +76,7 @@ async function recordClassification(label, platformId) {
   entry.total++;
   if (label) {
     entry.filtered++;
+    if (source === 'text') entry.textFiltered = (entry.textFiltered || 0) + 1;
     if (entry.byLabel[label] !== undefined) entry.byLabel[label]++;
     entry.byPlatform[platformId] = (entry.byPlatform[platformId] || 0) + 1;
   }
@@ -155,7 +158,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 
   if (message.type === 'RECORD_STAT') {
-    recordClassification(message.label, message.platformId);
+    recordClassification(message.label, message.platformId, message.source);
     return false;
   }
 
