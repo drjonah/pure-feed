@@ -1,6 +1,6 @@
 {
   "name": "pure-feed-extension",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "private": true,
   "scripts": {
     "setup": "npm install && cd options && npm install && cd .. && node build.mjs && cd options && npm run build",
@@ -8,8 +8,8 @@
     "package": "node build.mjs && cd options && npm run build && cd .. && node package.mjs"
   },
   "dependencies": {
-    "@tensorflow/tfjs": "^3.18.0",
-    "nsfwjs": "^2.x"
+    "@tensorflow/tfjs": "^4.22.0",
+    "nsfwjs": "^4.3.0"
   },
   "devDependencies": {
     "esbuild": "^0.27.4"

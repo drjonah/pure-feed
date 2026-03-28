@@ -174,3 +174,14 @@ npm run dev
 - **On-device ML** — the model ships with the extension and runs locally via WebGL or WASM
 - **No image uploads** — pixels are classified inside an offscreen canvas; they never leave your browser
 - **Local storage only** — settings, stats, and any custom replacement image are stored in `chrome.storage.local`
+
+---
+
+## Acknowledgements
+
+Pure Feed is built on top of these open-source projects:
+
+- **[NSFW.js](https://github.com/infinitered/nsfwjs)** by [Infinite Red](https://infinite.red) — client-side NSFW image classification (MIT License)
+- **[TensorFlow.js](https://github.com/tensorflow/tfjs)** by Google — ML inference in the browser (Apache 2.0 License)
+
+See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for full license texts.
