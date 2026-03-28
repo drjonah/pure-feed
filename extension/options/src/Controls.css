@@ -408,6 +408,109 @@ details[open] .summary-arrow {
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 
+/* ── Hint text under toggles ─────────────────────── */
+.row-hint {
+  font-size: 12px;
+  color: #9ca3af;
+  line-height: 1.4;
+  margin-top: 4px;
+}
+
+/* ── Custom word chips ────────────────────────────── */
+.custom-words-divider {
+  height: 1px;
+  background: #f3f4f6;
+  margin: 14px 0;
+}
+
+.custom-words-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+
+.custom-words-input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.custom-word-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  color: #374151;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.custom-word-input:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.btn-add-word {
+  padding: 8px 16px;
+  background: #4f46e5;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.15s;
+}
+
+.btn-add-word:hover { opacity: 0.88; }
+
+.custom-words-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.word-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  background: #f3f4f6;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.chip-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 50%;
+  padding: 0;
+  transition: background 0.15s, color 0.15s;
+}
+
+.chip-remove:hover {
+  background: #fecaca;
+  color: #dc2626;
+}
+
 .number-input:hover { border-color: #c7d2fe; }
 
 .number-input:focus {

@@ -41,6 +41,7 @@ function approxKB(dataUrl) {
 export default function Controls() {
   const [settings, setSettings]               = useState(null);
   const [replacementImage, setReplacementImage] = useState(null); // { dataUrl, name } | null
+  const [customWordInput, setCustomWordInput]   = useState('');
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -159,29 +160,35 @@ export default function Controls() {
         </div>
       </section>
 
-      {/* Advanced Thresholds */}
+      {/* Filter Strength */}
       <details className="control-section">
         <summary>
-          <h2>Advanced Thresholds</h2>
+          <h2>Filter Strength</h2>
           <span className="summary-arrow">&#9658;</span>
         </summary>
+        <div className="row-hint" style={{ marginBottom: '14px' }}>
+          Higher values = stronger filtering. Catches more content but may increase false positives.
+        </div>
         <div className="thresholds">
-          {LABELS.map((label) => (
-            <div key={label} className="threshold-row">
-              <span className="threshold-label">{label}</span>
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.05"
-                value={settings.thresholds[label] ?? 1}
-                onChange={(e) => updateThreshold(label, parseFloat(e.target.value))}
-              />
-              <span className="threshold-value">
-                {(settings.thresholds[label] ?? 1).toFixed(2)}
-              </span>
-            </div>
-          ))}
+          {LABELS.map((label) => {
+            const display = 1 - (settings.thresholds[label] ?? 1);
+            return (
+              <div key={label} className="threshold-row">
+                <span className="threshold-label">{label}</span>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  value={display}
+                  onChange={(e) => updateThreshold(label, 1 - parseFloat(e.target.value))}
+                />
+                <span className="threshold-value">
+                  {display.toFixed(2)}
+                </span>
+              </div>
+            );
+          })}
         </div>
       </details>
 
@@ -244,6 +251,85 @@ export default function Controls() {
           style={{ display: 'none' }}
           onChange={handleFileUpload}
         />
+      </section>
+
+      {/* Text Filtering */}
+      <section className="control-section">
+        <h2>Text filtering</h2>
+        <div className="control-row">
+          <span className="row-text">Filter posts by text content</span>
+          <label className="toggle">
+            <input
+              type="checkbox"
+              checked={settings.textFilterEnabled ?? false}
+              onChange={(e) => update({ textFilterEnabled: e.target.checked })}
+            />
+            <span className="toggle-track"></span>
+          </label>
+        </div>
+        <div className="row-hint">
+          Deletes posts containing explicit text. No blur — posts are removed entirely.
+        </div>
+
+        {settings.textFilterEnabled && (
+          <>
+            <div className="custom-words-divider" />
+            <div className="custom-words-label">Custom words</div>
+            <div className="custom-words-input-row">
+              <input
+                type="text"
+                className="custom-word-input"
+                placeholder="Add a word or phrase…"
+                value={customWordInput}
+                onChange={(e) => setCustomWordInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const word = customWordInput.trim();
+                    if (!word) return;
+                    const existing = settings.textFilterCustomWords || [];
+                    if (!existing.some(w => w.toLowerCase() === word.toLowerCase())) {
+                      update({ textFilterCustomWords: [...existing, word] });
+                    }
+                    setCustomWordInput('');
+                  }
+                }}
+              />
+              <button
+                className="btn-add-word"
+                onClick={() => {
+                  const word = customWordInput.trim();
+                  if (!word) return;
+                  const existing = settings.textFilterCustomWords || [];
+                  if (!existing.some(w => w.toLowerCase() === word.toLowerCase())) {
+                    update({ textFilterCustomWords: [...existing, word] });
+                  }
+                  setCustomWordInput('');
+                }}
+              >
+                Add
+              </button>
+            </div>
+            {(settings.textFilterCustomWords?.length > 0) && (
+              <div className="custom-words-chips">
+                {settings.textFilterCustomWords.map((word) => (
+                  <span key={word} className="word-chip">
+                    {word}
+                    <button
+                      className="chip-remove"
+                      onClick={() => {
+                        const updated = settings.textFilterCustomWords.filter(w => w !== word);
+                        update({ textFilterCustomWords: updated });
+                      }}
+                    >
+                      &times;
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+          </>
+        )}
       </section>
 
       {/* Image Filtering */}

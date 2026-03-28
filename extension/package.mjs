@@ -20,6 +20,7 @@ execSync(
   `-x "package.json" ` +
   `-x "package-lock.json" ` +
   `-x "content/content.js" ` +
+  `-x "content/text-filter.js" ` +
   `-x "content/platforms/*" ` +
   `-x "offscreen/offscreen.js" ` +
   `-x ".DS_Store"`,
