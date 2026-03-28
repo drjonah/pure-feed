@@ -1,6 +1,6 @@
 {
   "name": "pure-feed-extension",
-  "version": "0.1.0",
+  "version": "0.2.5",
   "private": true,
   "scripts": {
     "setup": "npm install && cd options && npm install && cd .. && node build.mjs && cd options && npm run build",

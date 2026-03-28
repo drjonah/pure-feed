@@ -10,6 +10,8 @@ const DEFAULT_SETTINGS = {
   smallImageThreshold: 100,
   checkVideoFrames: true,
   showFilteredCount: true,
+  textFilterEnabled: false,
+  textFilterCustomWords: [],
 };
 
 export default function About() {

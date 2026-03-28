@@ -14,6 +14,12 @@ export const INSTAGRAM = {
   // The image container inside each post
   mediaWrapper: 'article div[role="button"] > div, article div[style*="padding-bottom"]',
 
+  // Post text content (captions) for text-based filtering
+  textContent: 'article span[dir="auto"]',
+
+  // Post container for deletion
+  postContainer: 'article',
+
   minWidth: 100,
   minHeight: 100,
 };
