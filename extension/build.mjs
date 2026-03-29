@@ -1,6 +1,16 @@
 import * as esbuild from 'esbuild';
+import { readFileSync, writeFileSync, mkdirSync, cpSync, existsSync } from 'fs';
+import { join } from 'path';
 
-// Shim Node builtins that nsfwjs/tfjs reference but never execute in browser.
+// --- Parse CLI flags ---
+const args = process.argv.slice(2);
+const browserFlag = args.find(a => a.startsWith('--browser='));
+const browsers = browserFlag
+  ? [browserFlag.split('=')[1]]
+  : ['chrome', 'firefox'];
+
+// --- esbuild plugins (shared) ---
+
 const nodeBuiltinShimPlugin = {
   name: 'node-builtin-shim',
   setup(build) {
@@ -17,9 +27,6 @@ const nodeBuiltinShimPlugin = {
   },
 };
 
-// nsfwjs 4.x bundles all model weights as JS modules (~38 MB).
-// We load our own model from extension local files, so replace
-// default_models.js with an empty list to exclude them from the bundle.
 const nsfwjsModelStubPlugin = {
   name: 'nsfwjs-model-stub',
   setup(build) {
@@ -35,28 +42,122 @@ const nsfwjsModelStubPlugin = {
   },
 };
 
-await Promise.all([
-  esbuild.build({
-    entryPoints: ['offscreen/offscreen.js'],
-    bundle: true,
-    outfile: 'offscreen/offscreen.bundle.js',
-    format: 'iife',
-    platform: 'browser',
-    target: 'chrome120',
-    sourcemap: false,
-    minify: false,
-    logLevel: 'info',
-    plugins: [nodeBuiltinShimPlugin, nsfwjsModelStubPlugin],
-  }),
-  esbuild.build({
-    entryPoints: ['content/content.js'],
-    bundle: true,
-    outfile: 'content/content.bundle.js',
-    format: 'iife',
-    platform: 'browser',
-    target: 'chrome120',
-    sourcemap: false,
-    minify: false,
-    logLevel: 'info',
-  }),
-]);
+// --- Manifest generation ---
+
+function generateManifest(browser, outDir) {
+  const base = JSON.parse(readFileSync('manifest.base.json', 'utf8'));
+  const overrides = JSON.parse(readFileSync('manifest.overrides.json', 'utf8'));
+  const merged = { ...base, ...overrides[browser] };
+  writeFileSync(join(outDir, 'manifest.json'), JSON.stringify(merged, null, 2));
+}
+
+// --- Copy static files ---
+
+function copyStatic(outDir, browser) {
+  const dirs = ['popup', 'assets', 'models'];
+  for (const dir of dirs) {
+    if (existsSync(dir)) {
+      cpSync(dir, join(outDir, dir), { recursive: true });
+    }
+  }
+  // Options page (built output only)
+  if (existsSync('options/dist')) {
+    mkdirSync(join(outDir, 'options'), { recursive: true });
+    cpSync('options/dist', join(outDir, 'options', 'dist'), { recursive: true });
+  }
+  // Chrome-only: offscreen HTML
+  if (browser === 'chrome') {
+    mkdirSync(join(outDir, 'offscreen'), { recursive: true });
+    cpSync('offscreen/offscreen.html', join(outDir, 'offscreen', 'offscreen.html'));
+  }
+}
+
+// --- Build per browser ---
+
+async function buildForBrowser(browser) {
+  const outDir = join('dist', browser);
+  mkdirSync(outDir, { recursive: true });
+
+  const builds = [];
+
+  // Content script — same for both browsers
+  builds.push(
+    esbuild.build({
+      entryPoints: ['content/content.js'],
+      bundle: true,
+      outfile: join(outDir, 'content', 'content.bundle.js'),
+      format: 'iife',
+      platform: 'browser',
+      target: 'es2022',
+      sourcemap: false,
+      minify: false,
+      logLevel: 'info',
+    })
+  );
+
+  if (browser === 'chrome') {
+    // Chrome: offscreen bundle (includes TF.js + classifier)
+    builds.push(
+      esbuild.build({
+        entryPoints: ['offscreen/offscreen.js'],
+        bundle: true,
+        outfile: join(outDir, 'offscreen', 'offscreen.bundle.js'),
+        format: 'iife',
+        platform: 'browser',
+        target: 'chrome120',
+        sourcemap: false,
+        minify: false,
+        logLevel: 'info',
+        plugins: [nodeBuiltinShimPlugin, nsfwjsModelStubPlugin],
+      })
+    );
+    // Chrome: service worker (ESM, no bundling of TF.js — that's in offscreen)
+    // The service worker uses import for shared.js but does NOT import TF.js
+    builds.push(
+      esbuild.build({
+        entryPoints: ['background/service-worker.js'],
+        bundle: true,
+        outfile: join(outDir, 'background', 'service-worker.js'),
+        format: 'esm',
+        platform: 'browser',
+        target: 'chrome120',
+        sourcemap: false,
+        minify: false,
+        logLevel: 'info',
+        external: ['@tensorflow/tfjs', 'nsfwjs'],
+      })
+    );
+  }
+
+  if (browser === 'firefox') {
+    // Firefox: background bundle (includes shared + classifier + TF.js)
+    builds.push(
+      esbuild.build({
+        entryPoints: ['background/background.js'],
+        bundle: true,
+        outfile: join(outDir, 'background', 'background.bundle.js'),
+        format: 'iife',
+        platform: 'browser',
+        target: 'firefox109',
+        sourcemap: false,
+        minify: false,
+        logLevel: 'info',
+        plugins: [nodeBuiltinShimPlugin, nsfwjsModelStubPlugin],
+      })
+    );
+  }
+
+  await Promise.all(builds);
+
+  // Generate manifest and copy static files
+  generateManifest(browser, outDir);
+  copyStatic(outDir, browser);
+
+  console.log(`\n✓ Built for ${browser} → dist/${browser}/`);
+}
+
+// --- Main ---
+
+for (const browser of browsers) {
+  await buildForBrowser(browser);
+}

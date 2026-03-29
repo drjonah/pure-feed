@@ -1,31 +1,25 @@
-// Packages the extension into a zip for GitHub Releases
+// Packages the extension into browser-specific zips for distribution
 import { execSync } from 'child_process';
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
 
-const { version } = JSON.parse(readFileSync('manifest.json', 'utf8'));
-const filename = `pure-feed-v${version}.zip`;
+const args = process.argv.slice(2);
+const browserFlag = args.find(a => a.startsWith('--browser='));
+const browsers = browserFlag
+  ? [browserFlag.split('=')[1]]
+  : ['chrome', 'firefox'];
 
-// Zip everything except node_modules, source maps, and dev files
-execSync(
-  `zip -r ../${filename} . ` +
-  `-x "node_modules/*" ` +
-  `-x "options/node_modules/*" ` +
-  `-x "options/src/*" ` +
-  `-x "options/index.html" ` +
-  `-x "options/vite.config.js" ` +
-  `-x "options/package.json" ` +
-  `-x "options/package-lock.json" ` +
-  `-x "build.mjs" ` +
-  `-x "package.mjs" ` +
-  `-x "package.json" ` +
-  `-x "package-lock.json" ` +
-  `-x "content/content.js" ` +
-  `-x "content/text-filter.js" ` +
-  `-x "content/platforms/*" ` +
-  `-x "offscreen/offscreen.js" ` +
-  `-x ".DS_Store"`,
-  { stdio: 'inherit' }
-);
+const { version } = JSON.parse(readFileSync('manifest.base.json', 'utf8'));
 
-console.log(`\nPackaged: ${filename}`);
-console.log(`Upload this file to a GitHub Release.`);
+for (const browser of browsers) {
+  const distDir = `dist/${browser}`;
+  if (!existsSync(distDir)) {
+    console.error(`Error: ${distDir} does not exist. Run "npm run build" first.`);
+    process.exit(1);
+  }
+
+  const filename = `pure-feed-v${version}-${browser}.zip`;
+  execSync(`cd ${distDir} && zip -r ../../${filename} .`, { stdio: 'inherit' });
+  console.log(`\nPackaged: ${filename}`);
+}
+
+console.log(`\nUpload these files to a GitHub Release.`);

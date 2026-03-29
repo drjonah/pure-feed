@@ -6,6 +6,7 @@ extension/options/node_modules/
 .DS_Store
 
 # Build artifacts
+extension/dist/
 extension/content/content.bundle.js
 extension/offscreen/offscreen.bundle.js
 extension/options/dist/

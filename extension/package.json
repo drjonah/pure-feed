@@ -3,9 +3,13 @@
   "version": "0.2.7",
   "private": true,
   "scripts": {
-    "setup": "npm install && cd options && npm install && cd .. && node build.mjs && cd options && npm run build",
-    "build": "node build.mjs && cd options && npm run build",
-    "package": "node build.mjs && cd options && npm run build && cd .. && node package.mjs"
+    "setup": "npm install && cd options && npm install && cd .. && npm run build",
+    "build": "cd options && npm run build && cd .. && node build.mjs",
+    "build:chrome": "cd options && npm run build && cd .. && node build.mjs --browser=chrome",
+    "build:firefox": "cd options && npm run build && cd .. && node build.mjs --browser=firefox",
+    "package": "npm run build && node package.mjs",
+    "package:chrome": "npm run build:chrome && node package.mjs --browser=chrome",
+    "package:firefox": "npm run build:firefox && node package.mjs --browser=firefox"
   },
   "dependencies": {
     "@tensorflow/tfjs": "^4.22.0",

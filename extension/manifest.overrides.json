@@ -1,0 +1,21 @@
+{
+  "chrome": {
+    "permissions": ["storage", "offscreen", "scripting", "activeTab"],
+    "background": {
+      "service_worker": "background/service-worker.js",
+      "type": "module"
+    }
+  },
+  "firefox": {
+    "permissions": ["storage", "scripting", "activeTab"],
+    "background": {
+      "scripts": ["background/background.bundle.js"]
+    },
+    "browser_specific_settings": {
+      "gecko": {
+        "id": "purefeed@example.com",
+        "strict_min_version": "109.0"
+      }
+    }
+  }
+}
