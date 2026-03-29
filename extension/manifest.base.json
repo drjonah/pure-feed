@@ -3,12 +3,6 @@
   "name": "Pure Feed",
   "version": "0.2.7",
   "description": "Filters NSFW images from social media feeds using on-device ML.",
-  "permissions": [
-    "storage",
-    "offscreen",
-    "scripting",
-    "activeTab"
-  ],
   "host_permissions": [
     "https://twitter.com/*",
     "https://x.com/*",
@@ -21,10 +15,6 @@
     "https://*.cdninstagram.com/*",
     "https://*.fbcdn.net/*"
   ],
-  "background": {
-    "service_worker": "background/service-worker.js",
-    "type": "module"
-  },
   "content_scripts": [
     {
       "matches": [
